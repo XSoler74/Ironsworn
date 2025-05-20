@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ironsworn: Tiradas</title>
+  <style>
+    :root {
+      --bg-color: #f5f5f7;
+      --card-color: #ffffff;
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --primary: #0071e3;
+      --primary-hover: #0077ed;
+      --success: #34c759;
+      --weak-success: #ffcc00;
+      --failure: #ff3b30;
+      --border: #d2d2d7;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #1a1a1a;
+        --card-color: #2c2c2e;
+        --text-primary: #f5f5f7;
+        --text-secondary: #a1a1a6;
+        --border: #3a3a3c;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      }
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 500px;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 2.5rem;
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+    
+    .card {
+      background-color: var(--card-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+    
+    .input-group {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    
+    .input-field {
+      flex: 1;
+      margin: 0 0.5rem;
+    }
+    
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      letter-spacing: -0.08px;
+    }
+    
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 17px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background-color: transparent;
+      color: var(--text-primary);
+      text-align: center;
+      -webkit-appearance: none;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    button {
+      width: 100%;
+      padding: 15px;
+      font-size: 17px;
+      font-weight: 500;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    #resultado {
+      margin-top: 2rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    #resultado.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .result-card {
+      background-color: var(--card-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    
+    .result-line {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 17px;
+    }
+    
+    .result-value {
+      font-weight: 600;
+    }
+    
+    .result-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 1rem 0 0.5rem;
+      text-align: center;
+    }
+    
+    .strong-success {
+      color: var(--success);
+    }
+    
+    .weak-success {
+      color: var(--weak-success);
+    }
+    
+    .failure {
+      color: var(--failure);
+    }
+    
+    .emoji {
+      font-size: 24px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    
+    @media (max-width: 500px) {
+      .container {
+        padding: 1.5rem;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+      
+      .input-field {
+        margin: 0.5rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ironsworn</h1>
+    
+    <div class="card">
+      <div class="input-group">
+        <div class="input-field">
+          <label for="atributo">ATRIBUTO</label>
+          <input type="number" id="atributo" value="2" min="0" max="5">
+        </div>
+        
+        <div class="input-field">
+          <label for="modificador">MODIFICADOR</label>
+          <input type="number" id="modificador" value="0" min="-5" max="5">
+        </div>
+      </div>
+      
+      <button onclick="tirarDados()">Tirar Dados</button>
+    </div>
+    
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    function tirarDados() {
+      // Obtener valores
+      let atributo = parseInt(document.getElementById('atributo').value) || 0;
+      let modificador = parseInt(document.getElementById('modificador').value) || 0;
+      
+      // Generar tiradas
+      let dadoAccion = Math.floor(Math.random() * 6) + 1;
+      let total = dadoAccion + atributo + modificador;
+      let d1 = Math.floor(Math.random() * 10) + 1;
+      let d2 = Math.floor(Math.random() * 10) + 1;
+      
+      // Calcular resultado
+      let hits = 0;
+      if (total > d1) hits++;
+      if (total > d2) hits++;
+      
+      // Determinar tipo de resultado
+      let resultado, resultadoClass, emoji;
+      if (hits === 2) {
+        resultado = "Éxito fuerte";
+        resultadoClass = "strong-success";
+        emoji = "✅";
+      } else if (hits === 1) {
+        resultado = "Éxito débil";
+        resultadoClass = "weak-success";
+        emoji = "⚖️";
+      } else {
+        resultado = "Fallo";
+        resultadoClass = "failure";
+        emoji = "❌";
+      }
+      
+      // Mostrar resultado
+      const resultadoDiv = document.getElementById("resultado");
+      resultadoDiv.innerHTML = `
+        <div class="result-card">
+          <div class="result-line">
+            <span>Dado de acción:</span>
+            <span class="result-value">${dadoAccion}</span>
+          </div>
+          <div class="result-line">
+            <span>Atributo:</span>
+            <span class="result-value">${atributo}</span>
+          </div>
+          <div class="result-line">
+            <span>Modificador:</span>
+            <span class="result-value">${modificador}</span>
+          </div>
+          <div class="result-line" style="margin-top: 16px;">
+            <span><b>Total acción:</b></span>
+            <span class="result-value"><b>${total}</b></span>
+          </div>
+          
+          <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
+          
+          <div class="result-line">
+            <span>Desafíos:</span>
+            <span class="result-value">${d1}, ${d2}</span>
+          </div>
+          
+          <div class="result-title ${resultadoClass}">
+            ${emoji} ${resultado}
+          </div>
+        </div>
+      `;
+      
+      // Animación de aparición
+      setTimeout(() => {
+        resultadoDiv.classList.add('show');
+      }, 10);
+    }
+  </script>
+</body>
+</html>
